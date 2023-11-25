@@ -1,0 +1,31 @@
+struct data1{
+int a ;
+int b ;
+};
+
+string func(string a,int b)
+{
+  if(b eq 0) {return a ;}
+  else {
+    string encrypted = str_encrypt(a);
+    return encrypted;
+  }      
+  return a;
+}
+
+int rec(int a)
+{
+    if(a eq 1) {return 1;}
+    else {
+        return mul(a,rec(sub(a,1)));
+    }
+}
+
+int main ()
+{
+int a;
+ int b;
+ int fact = rec(a);
+ func(a);
+ return 0;
+}

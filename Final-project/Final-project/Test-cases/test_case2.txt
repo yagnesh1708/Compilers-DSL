@@ -1,0 +1,11 @@
+int add1(int a,int b,int c){
+    return add(a,add(b,c));
+}
+
+int main(){
+    int a = 10;
+    int b = 20;
+    int c = 30;
+    print(cout,"Added values are ",add1(a,b,c));
+    return 0;
+}

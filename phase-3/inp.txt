@@ -1,0 +1,22 @@
+int a;
+
+int y[10];
+int fact(int n)
+{
+    int m;
+    if(n gt 1) 
+    {
+        m = sub(n,1);
+        return mul(n,fact(m));
+    }
+    else
+    {
+        return 1;
+    }
+}
+int main ()
+{
+    int n = 10;
+    int x ;
+    x = fact(n);
+}

@@ -1,0 +1,20 @@
+Team 19
+datatype: int
+ID: x
+punctuation: ,
+ID: y
+punctuation: ,
+ID: z
+punctuation: ;
+datatype: int
+reserved keyword: main
+special symbol: (
+special symbol: )
+special symbol: {
+datatype: int
+ID: a
+punctuation: ;
+special symbol: }
+datatype: int
+ID: v
+punctuation: ;
