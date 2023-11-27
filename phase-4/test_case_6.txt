@@ -1,0 +1,31 @@
+int check(int a,int b,int c)
+{
+    print(cout ,"\n") ;
+}
+
+int func2()
+{
+    int a = 10 ;
+    int b = 20 ; 
+    int c = 30 ;
+
+    int y = add1(10,20,30) ;
+
+    iterate(a = 10 ; a lt 10 ; a++)
+    {
+        if( b gt 10)
+        {
+            return 10 ;
+        }
+    }
+}
+
+int main()
+{
+    int a = 10 ;
+    int b = 20 ; 
+    int c = 30 ;
+
+    int y = add1(10,20,30) ;
+    return 0 ;
+}

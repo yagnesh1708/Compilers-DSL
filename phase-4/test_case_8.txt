@@ -1,14 +1,9 @@
-struct data1{
-int a ;
-int b ;
-};
-
-string func(string a,int b)
+string func(string a,string b)
 {
-  if (b eq 0) {return a ;}
+  if (b eq "0") {return a ;}
   else 
   {
-    string encrypted = add(a,a);
+    string encrypted = str_encrypt(a,b);
     return encrypted;
   }      
   return a;
@@ -29,9 +24,9 @@ int main ()
  int b;
  int fact = rec(a);
  string s;
- s = func(s,a);
+ s = func(s,str3);
  iterate(a = 0:a lt 10:a++){
-  s = func(s,a);
+  s = func(s,str2);
  }
  return 0;
 }

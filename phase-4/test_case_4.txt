@@ -7,7 +7,7 @@ string func(string a,int b)
 {
   if(b eq 0) {return a ;}
   else {
-    string encrypted = str_encrypt(a);
+    string encrypted = str_encrypt(a,a);
     return encrypted;
   }      
   return a;
@@ -26,6 +26,6 @@ int main ()
 int a;
  int b;
  int fact = rec(a);
- func(a);
+ a = func(a,b);
  return 0;
 }

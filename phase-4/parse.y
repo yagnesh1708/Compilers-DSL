@@ -81,8 +81,8 @@
         | {} ;
 
     CODE_PART 
-        :  DECL_STMT ';' { fprintf(cppfile,";\n");  } {}
-        | STRUCTURE ';' { fprintf(cppfile,";\n");  } {}
+        :  DECL_STMT ';' { fprintf(cppfile,";\n");  } 
+        | STRUCTURE ';' { fprintf(cppfile,";\n");  } 
         | FUNCTION {} ;
     
     STRUCTURE : STRUCT ID {scope ++;} '{' { fprintf(cppfile,"struct ");
@@ -298,6 +298,7 @@
             $$.dim = 0;
             $$.size = $1; 
             $$.type = get_type($1);
+            // printf("%s\n",get_type($1));
         }
         | ID '[' DIMENSION ']' {
             char *temp;
@@ -362,27 +363,27 @@
         } ;    
     
     RHS 
-        : LHS1  {$$.type = $1.type}
-        | CONSTANT {char *temp = "string"; $$.type = temp;fprintf(cppfile,$1);}
-        | CHAR {char *temp = "int"; $$.type = temp;fprintf(cppfile,$1);}
+        : LHS1  {$$.type = $1.type; }
+        | CONSTANT {char temp[] = "string"; $$.type = temp;fprintf(cppfile,$1);}
+        | CHAR {char temp[] = "int"; $$.type = temp;fprintf(cppfile,$1);}
         | BI_OP {$$.type = $1;}
         | CALL_STMT {$$.type = $1;}
-        | NUM  {char *temp = "int"; $$.type = temp;fprintf(cppfile,$1); }
-        | DOUBLE {char *temp = "double"; $$.type = temp;fprintf(cppfile,$1);}
-        | TF {char *temp = "bool"; $$.type = temp;fprintf(cppfile,$1);}
+        | NUM  {char temp[] = "int"; $$.type = temp;fprintf(cppfile,$1); }
+        | DOUBLE {char temp[] = "double"; $$.type = temp;fprintf(cppfile,$1);}
+        | TF {char temp[] = "bool"; $$.type = temp;fprintf(cppfile,$1);}
         | ARRAY_1 {}
         | ARRAY_2 {}
         | PREDICATE {} ;
 
     RHS1 
-        : LHS1  {$$.type = $1.type}
-        | CONSTANT {char *temp = "string"; $$.type = temp;fprintf(cppfile,$1);}
-        | CHAR {char *temp = "int"; $$.type = temp;fprintf(cppfile,$1);}
+        : LHS1  {$$.type = $1.type; }
+        | CONSTANT {char temp[] = "string"; $$.type = temp;fprintf(cppfile,$1);}
+        | CHAR {char temp[] = "int"; $$.type = temp;fprintf(cppfile,$1);}
         | BI_OP {$$.type = $1}
         | CALL_STMT {$$.type = $1}
-        | NUM  {char *temp = "int"; $$.type = temp;fprintf(cppfile,$1); }
-        | DOUBLE {char *temp = "double"; $$.type = temp;fprintf(cppfile,$1);}
-        | TF {char *temp = "bool"; $$.type = temp;fprintf(cppfile,$1);}
+        | NUM  {char temp[] = "int"; $$.type = temp;fprintf(cppfile,$1); }
+        | DOUBLE {char temp[] = "double"; $$.type = temp;fprintf(cppfile,$1);}
+        | TF {char temp[] = "bool"; $$.type = temp;fprintf(cppfile,$1);}
         | ARRAY_1 {}
         | ARRAY_2 {}    
     
@@ -423,6 +424,7 @@
             else if(strcmp($2,"eq") == 0) fprintf(cppfile," == ");
             else if(strcmp($2,"neq") == 0) fprintf(cppfile," != ");
             } RHS1  {
+                // printf("%s,%s\n",$1.type,$4.type);
             if( strcmp($1.type,$4.type) !=0 ) return 4;
             } ;
 
@@ -438,24 +440,40 @@
                 if(!(func_seman($1))) return 4; 
             }
             }
-        | SINGLE_EN_DE_CRYPT {strcpy($$,$1);}
+        | SINGLE_EN_DE_CRYPT { char temp[] = "string" ; $$ = temp;}
         | MULTIPLE_EN_DE_CRYPT  {} ;      
     
-    SINGLE_EN_DE_CRYPT : EN_DE_CRYPT '('  ID ')'  {
-        fprintf(cppfile,"%s(%s)",$1,$3);
+    SINGLE_EN_DE_CRYPT : EN_DE_CRYPT '('  ID ',' ID ')'  {
+         if(check($3,scope)) return 2;
+            if(check($5,scope)) return 2;
+        fprintf(cppfile,"encryptDecrypt (%s,%s)",$3,$5);
+        // printf("%s,%s",get_type($3),get_type($5));
+        // if(strcmp(get_type($3),"string") !=0 && strcmp(get_type($5),"string") !=0) return 4;
+        // if(strcmp(get_type($5),"string") !=0){
+        //    printf("%s",get_type($5));
+        //     return 4;
+        // }
         strcpy($$,get_type($3));
         } ;
     
     MULTIPLE_EN_DE_CRYPT: 
-        EN_DE_CRYPTS '(' LHS ',' ID ')' {} 
-        | EN_DE_CRYPTS '(' NUM ',' ID ')' {} ;
+        EN_DE_CRYPTS '(' ID ',' ID ',' ID ')' {
+            if(check($3,scope)) return 2;
+            if(check($5,scope)) return 2;
+            if(check($7,scope)) return 2;
+            fprintf(cppfile,"encryptDecryptFile (%s,%s,%s)",$3,$5,$7);} 
+       
     
-    PRINT_STMT : PRINT {fprintf(cppfile,"cout ");} '(' PRINT_PARAM ')' {} ;
+    PRINT_STMT : PRINT  '(' PRINT_PARAM ')' {} ;
 
-    SCAN_STMT : SCAN {fprintf(cppfile,"cin ");} '(' PRINT_PARAM ')' {} ;
+    SCAN_STMT : SCAN  '(' PRINT_PARAM ')' {} ;
         
     PRINT_PARAM : 
-        ID  PRINT_PARAM_2 ;
+        ID { if(( strcmp($1,"cin")!=0 && strcmp($1,"cout")  !=0)){
+            if(get_dim($1) != -1) return 3;
+            if(check($1,scope)) return 2;
+        }
+         fprintf(cppfile,"%s ",$1);} PRINT_PARAM_2 ;
 
     PRINT_PARAM_2 :
         ',' {fprintf(cppfile,"<< ");} TEMP PRINT_PARAM_2
@@ -465,14 +483,18 @@
         //  | ;
 
     FILE_STMTS
-    : F_OPEN '(' ID ',' CONSTANT ',' R_W ')'
-    | F_CLOSE '(' ID ')' {if(check($3,scope)) return 3;} 
+    : F_OPEN '(' ID ',' CONSTANT ')' { 
+        // if(check($3,scope)) return 3;
+        // dimx($3);
+        fprintf(cppfile,"%s.open(%s)",$3,$5);
+        }
+    | F_CLOSE '(' ID ')' {if(check($3,scope)) return 3;fprintf(cppfile,"%s.close()",$3);} 
     ;
 
     LOOP_STMT 
-        : ITERATE '(' {
+        : ITERATE '(' { 
             fprintf(cppfile,"for(");
-        } LOOP_LHS RHS ':' {fprintf(cppfile,";");} PREDICATE ':' {fprintf(cppfile,";");} EXPR_STMT ')''{' {loopcount++;fprintf(cppfile,"){");} STATS '}' {loopcount--;fprintf(cppfile,"}");}
+        } LOOP_LHS RHS ':' {fprintf(cppfile,";");} PREDICATE ':' {fprintf(cppfile,";");} EXPR_STMT ')' '{' {loopcount++;fprintf(cppfile,"){");} STATS '}' {loopcount--;fprintf(cppfile,"}");}
         | ITERATE '(' {fprintf(cppfile,"while(");}  PREDICATE  ')' '{' {loopcount++;fprintf(cppfile,"){");} STATS '}' {loopcount--;fprintf(cppfile,"}");} ;
 
     PARAM_LIST
@@ -529,9 +551,9 @@
          fprintf(cppfile," ");
          fprintf(cppfile,$1);
          }
-        | NUM { fprintf(cppfile,$1); char *temp = "int"; $$ = temp; }
-        | DOUBLE { fprintf(cppfile,$1); char *temp = "double"; $$ = temp; }
-        | CONSTANT { fprintf(cppfile,$1); char *temp = "string"; $$ = temp; }
+        | NUM { fprintf(cppfile,$1); char temp[] = "int" ; $$ = temp; }
+        | DOUBLE { fprintf(cppfile,$1); char temp[] = "double"; $$ = temp; }
+        | CONSTANT { fprintf(cppfile,$1); char temp[] = "string"; $$ = temp; }
         | CHAR { fprintf(cppfile,$1); char *temp = "char"; $$ = temp; }
         | CALL_STMT {$$ = $1}
         ;
@@ -555,7 +577,7 @@ int main(int argc , char* argv[])
     op = fopen("parser.txt","w") ;
 
     cppfile = fopen("gen.cpp","w") ;
-    fprintf(cppfile,"#include <bits/stdc++.h> \n using namespace std;\n");
+    fprintf(cppfile,"#include <bits/stdc++.h> \n #include \"ende.hpp\" \n using namespace std;\n");
     
     fprintf(fp,"Team 19\n");
 

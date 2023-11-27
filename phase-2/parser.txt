@@ -1,5 +1,0 @@
-int x,y,z;
-int main(){
-    int a;
-}
-int v;

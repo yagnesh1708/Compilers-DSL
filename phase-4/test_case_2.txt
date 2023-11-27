@@ -1,0 +1,14 @@
+
+int main(){
+    int a = 10;
+    
+    if(a eq 10)
+    {
+        a = add(a,20);
+    }
+    else
+    {
+        a = add(a,-10);
+    }
+    return 0;
+}

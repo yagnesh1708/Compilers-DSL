@@ -14,12 +14,12 @@ s_digit [0-9]+
 s_letter [a-zA-Z_] 
 s_alpnum [a-zA-Z_0-9]
 
-datatype_pr ("bool"|"int"|"char"|"string"|"file")
+datatype_pr ("bool"|"int"|"char"|"string"|"ifstream"|"ofstream")
 datatype_fd ("float"|double)
 datatype_mat ("matrix")
 
-en_de_crypt ("mat_encrypt"|"file_encrypt"|"str_encrypt"|"mat_decrypt"|"file_decrypt"|"str_decrypt")
-en_de_crypts ("mats_encrypt"|"files_encrypt"|"strs_encrypt"|"mats_decrypt"|"files_decrypt"|"strs_decrypt")
+en_de_crypt ("str_encrypt"|"str_decrypt")
+en_de_crypts ("file_encrypt"|"file_decrypt")
 
 
 vo ("void")
@@ -304,7 +304,7 @@ comment_2 #"*"(.|\n)*"*"#
 }
 
 
-\".*\" {
+\"(\\.|[^\\"])*\" {
     yylval.string = strdup(yytext) ;
     fprintf(fp,"punctuation: \"\n");
     fprintf(fp,"constant: ");
@@ -338,7 +338,8 @@ comment_2 #"*"(.|\n)*"*"#
 {id2} {
     yylval.string = strdup(yytext) ;
 	fprintf(fp,"Invalid token at line number: %d",label_num);
-	return 0;
+    printf("Invalid token\n");
+	return *yytext;
 }
 
 {spaces} {

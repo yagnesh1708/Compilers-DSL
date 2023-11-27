@@ -1,0 +1,14 @@
+
+int main()
+{
+ 
+ string new1  = "This should be encrypted" ;
+ string key = "Key" ;
+ string encrypted_string = str_encrypt(new1,key);
+ print(cout,"This is encrypted : ",encrypted_string , "\n");
+ string decrypted = str_decrypt(encrypted_string,key);
+ print(cout,"This is decrypted : ",decrypted, "\n" );
+
+ return 0;
+
+}

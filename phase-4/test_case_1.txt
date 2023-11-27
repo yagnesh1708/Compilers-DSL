@@ -1,0 +1,14 @@
+
+int main()
+{
+ 
+ string in  = "inp.txt" ;
+ string out = "out.txt" ;
+ string key = "Key" ;
+string out1 = "out1.txt" ;
+
+ file_encrypt(in,out,key) ; 
+ file_decrypt(out,out1,key) ; 
+ return 0;
+
+}
